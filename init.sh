@@ -25,32 +25,21 @@ docker compose up -d pretix_db pretix_redis
 
 # 4. Wait for DB to be ready
 echo "⏳ Waiting for database to be ready..."
-for i in {1..30}; do
-    if docker compose exec -T pretix_db pg_isready -U pretix >/dev/null 2>&1; then
-        echo "✅ Database is ready!"
-        break
-    fi
-    echo "Waiting... ($i/30)"
-    sleep 2
-done
+sleep 15
 
 # 5. Run migrations
 echo "🗄️ Running database migrations..."
 docker compose run --rm pretix migrate
 
-# 6. Create superuser
-echo "👤 Creating administrator account..."
-docker compose run --rm pretix createsuperuser
-
-# 7. Start pretix app
+# 6. Start pretix app
 echo "🌐 Starting Pretix application..."
 docker compose up -d pretix
 
-# 8. Wait for pretix to be ready
+# 7. Wait for pretix to be ready
 echo "⏳ Waiting for Pretix to start..."
-sleep 5
+sleep 10
 
-# 9. Update the site URL using Django's Site framework
+# 8. Update the site URL using Django's Site framework
 echo "🔧 Configuring site URL in database..."
 docker compose exec -T pretix python manage.py shell << 'PYEOF'
 from django.contrib.sites.models import Site
@@ -61,12 +50,16 @@ site.save()
 print('✅ Site URL updated successfully!')
 PYEOF
 
-# 10. Start nginx
+# 9. Start nginx
 echo "🚀 Starting Nginx reverse proxy..."
 docker compose up -d nginx
 
+# 10. Create superuser (optional - can be done after)
 echo ""
 echo "========================================="
-echo "🎉 SUCCESS: Pretix is fully deployed!"
+echo "🎉 Stack initialization complete!"
 echo "👉 Access URL: http://168.144.69.28.sslip.io:8345"
+echo ""
+echo "To create an admin account, run:"
+echo "  docker compose run --rm pretix createsuperuser"
 echo "========================================="
