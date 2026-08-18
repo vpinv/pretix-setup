@@ -1,17 +1,31 @@
 services:
+  # --- Nginx Reverse Proxy ---
+  nginx:
+    image: nginx:alpine
+    container_name: pretix_nginx
+    restart: always
+    ports:
+      - "8345:80"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+    depends_on:
+      - pretix
+    networks:
+      - pretix-network
+
   # --- Pretix Core Application ---
   pretix:
     image: pretix/standalone:stable
-    platform: linux/amd64       # Forces emulation layer on ARM64 chips
+    platform: linux/amd64
     container_name: pretix_app
     restart: always
-    ports:
-      - "8345:80"               # Maps public droplet port 8345 to internal port 80
+    expose:
+      - "80"
     environment:
       # General Settings
       - PRETIX_INSTANCE_NAME=My Ticket Shop
       - PRETIX_URL=http://168.144.69.28.sslip.io:8345
-      - PRETIX_ALLOWED_HOSTS=168.144.69.28.sslip.io,localhost,127.0.0.1
+      - PRETIX_ALLOWED_HOSTS=168.144.69.28.sslip.io,localhost,127.0.0.1,pretix
       - PRETIX_ALLOW_OTHER_HOSTS=True
       - PRETIX_CURRENCY=EUR
       
@@ -40,6 +54,8 @@ services:
         condition: service_healthy
       pretix_redis:
         condition: service_started
+    networks:
+      - pretix-network
 
   # --- Database ---
   pretix_db:
@@ -57,6 +73,8 @@ services:
       interval: 5s
       timeout: 5s
       retries: 5
+    networks:
+      - pretix-network
 
   # --- Cache & Task Queue Broker ---
   pretix_redis:
@@ -65,8 +83,14 @@ services:
     restart: always
     volumes:
       - pretix_redis_data:/data
+    networks:
+      - pretix-network
 
 volumes:
   pretix_app_data:
   pretix_db_data:
   pretix_redis_data:
+
+networks:
+  pretix-network:
+    driver: bridge
