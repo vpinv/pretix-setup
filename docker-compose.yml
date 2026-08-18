@@ -11,7 +11,7 @@ services:
       # General Settings
       - PRETIX_INSTANCE_NAME=My Ticket Shop
       # 👇 CHANGE THIS to match your Droplet's actual IP address followed by .sslip.io:8345
-      - PRETIX_URL=http://sslip.io
+      - PRETIX_URL=http://168.144.69.28.sslip.io:8345
       - PRETIX_ALLOW_OTHER_HOSTS=True
       - PRETIX_CURRENCY=EUR
       
