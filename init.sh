@@ -36,17 +36,13 @@ docker compose run --rm pretix migrate
 echo "👤 Launching Administrator creation menu..."
 docker compose run --rm pretix createsuperuser
 
-# 7. Update pretix configuration in the database
-echo "🔧 Configuring Pretix URL settings..."
-docker compose run --rm pretix shell << 'EOF'
-from pretix.base.models import GlobalSettings
-GlobalSettings.set('pretix_url', 'http://168.144.69.28.sslip.io:8345')
-print('✅ Pretix URL configured successfully!')
-EOF
-
-# 8. Bring up application servers
-echo "🌐 Starting core web application servers..."
+# 7. Bring up all services (nginx will proxy to pretix)
+echo "🌐 Starting all services with nginx proxy..."
 docker compose up -d
+
+# 8. Wait for services to be ready
+echo "⏳ Waiting for services to start..."
+sleep 5
 
 echo "========================================="
 echo "🎉 SUCCESS: Pretix is fully deployed!"
