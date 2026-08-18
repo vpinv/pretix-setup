@@ -29,25 +29,30 @@ services:
       - PRETIX_ALLOW_OTHER_HOSTS=True
       - PRETIX_TRUST_X_FORWARDED_FOR=True
       - PRETIX_CURRENCY=EUR
+      - PRETIX_DATADIR=/data
       
       # Database Connection
       - PRETIX_DATABASE_BACKEND=postgresql_psycopg2
       - PRETIX_DATABASE_NAME=pretix
       - PRETIX_DATABASE_USER=pretix
-      - PRETIX_DATABASE_PASSWORD=YOUR_STRONG_DB_PASSWORD
+      - PRETIX_DATABASE_PASSWORD=pretix123
       - PRETIX_DATABASE_HOST=pretix_db
+      - PRETIX_DATABASE_PORT=5432
       
       # Redis Cache & Celery Backend
       - PRETIX_REDIS_LOCATION=redis://pretix_redis:6379/1
       - PRETIX_REDIS_SESSIONS=True
       
-      # Mail Configuration
+      # Secret key for Django
+      - PRETIX_SECRET=your-super-secret-key-change-this-in-production
+      
+      # Mail Configuration (optional)
       - PRETIX_MAIL_FROM=tickets@yourdomain.com
-      - PRETIX_MAIL_HOST=smtp.yourdomain.com
-      - PRETIX_MAIL_PORT=587
-      - PRETIX_MAIL_USER=smtp_username
-      - PRETIX_MAIL_PASSWORD=YOUR_SMTP_PASSWORD
-      - PRETIX_MAIL_TLS=True
+      - PRETIX_MAIL_HOST=localhost
+      - PRETIX_MAIL_PORT=25
+      - PRETIX_MAIL_USER=
+      - PRETIX_MAIL_PASSWORD=
+      - PRETIX_MAIL_TLS=False
     volumes:
       - pretix_app_data:/data   
     depends_on:
@@ -66,7 +71,7 @@ services:
     environment:
       - POSTGRES_DB=pretix
       - POSTGRES_USER=pretix
-      - POSTGRES_PASSWORD=YOUR_STRONG_DB_PASSWORD
+      - POSTGRES_PASSWORD=pretix123
     volumes:
       - pretix_db_data:/var/lib/postgresql/data
     healthcheck:
