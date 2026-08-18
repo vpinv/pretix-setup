@@ -41,7 +41,7 @@ sleep 10
 
 # 8. Update the site URL using Django's Site framework
 echo "🔧 Configuring site URL in database..."
-docker compose exec -T pretix python manage.py shell << 'PYEOF'
+docker compose run --rm pretix shell << 'PYEOF'
 from django.contrib.sites.models import Site
 site = Site.objects.get_or_create(id=1)[0]
 site.domain = '168.144.69.28.sslip.io:8345'
