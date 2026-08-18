@@ -27,6 +27,7 @@ services:
       - PRETIX_URL=http://168.144.69.28.sslip.io:8345
       - PRETIX_ALLOWED_HOSTS=168.144.69.28.sslip.io,localhost,127.0.0.1,pretix
       - PRETIX_ALLOW_OTHER_HOSTS=True
+      - PRETIX_TRUST_X_FORWARDED_FOR=True
       - PRETIX_CURRENCY=EUR
       
       # Database Connection
